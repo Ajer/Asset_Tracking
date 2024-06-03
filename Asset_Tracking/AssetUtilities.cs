@@ -224,7 +224,10 @@ namespace Asset_Tracking
 
         public void PrintAsset(List<Asset> assetList)
         {
-            List<Asset> sorted = assetList.OrderBy(item => item.Type).ToList();
+            List<Asset> sorted = assetList.OrderBy(item => item.Type).ThenBy(item=>item.PurchaseDate).ToList();
+
+            //List<Asset> sorted = assetList.OrderBy(item => item.PurchaseDate).ToList();
+
             WriteHeader();
 
             foreach (var al in sorted)
