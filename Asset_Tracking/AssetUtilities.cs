@@ -224,10 +224,10 @@ namespace Asset_Tracking
 
         public void PrintAsset(List<Asset> assetList)
         {
-           
+            List<Asset> sorted = assetList.OrderBy(item => item.Type).ToList();
             WriteHeader();
 
-            foreach (var al in assetList)
+            foreach (var al in sorted)
             {
                 Console.WriteLine(al.Type.PadRight(12) + " " + al.Brand.PadRight(15) + " " + al.Model.PadRight(11) + " " + 
                     al.PurchaseDate.ToString("yyyy-MM-dd").PadRight(15) + " " + al.PriceInDollar.ToString().PadRight(15));
