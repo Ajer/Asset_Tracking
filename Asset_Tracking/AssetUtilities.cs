@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -196,20 +197,19 @@ namespace Asset_Tracking
             return null;
         }
 
-
+        // Checks if a datetime-string of format "yyyy-MM-dd" is a valid date
         public bool ValidateDate(string str)
         {
-            //bool ok = false;
-            //if (str.Length != 10)   // YYYY-MM-DD
-            //{
-            //    ok = false;
-            //}
-            //else
-            //{
-            //}
-
-            return true;
-              
+            DateTime dt;
+            string[] formats = {"yyyy-MM-dd"};
+            if (DateTime.TryParseExact(str, formats, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out dt))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }                    
         }
 
 
@@ -226,7 +226,6 @@ namespace Asset_Tracking
         {
             List<Asset> sorted = assetList.OrderBy(item => item.Type).ThenBy(item=>item.PurchaseDate).ToList();
 
-            //List<Asset> sorted = assetList.OrderBy(item => item.PurchaseDate).ToList();
 
             WriteHeader();
 
