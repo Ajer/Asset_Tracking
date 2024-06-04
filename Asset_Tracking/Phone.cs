@@ -8,7 +8,8 @@ namespace Asset_Tracking
 {
     public class Phone : Asset
     {
-        public Phone(string brand, string model, DateTime purchaseDate, double priceD):base("Phone",brand,purchaseDate,model,priceD)
+        public Phone(string brand, string model, DateTime purchaseDate, double priceD, double localPrice, Office office) :
+            base("Phone",brand,purchaseDate,model,priceD,localPrice,office)
         {         
         }
 

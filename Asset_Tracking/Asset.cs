@@ -8,13 +8,16 @@ namespace Asset_Tracking
 {
     public class Asset
     {
-        public Asset(string type, string brand, DateTime purchaseDate, string model, double priceInDollar)
+        public Asset(string type, string brand, DateTime purchaseDate, string model, double priceInDollar,
+            double localPrice,Office office)
         {
             Type = type;
             Brand = brand;
             PurchaseDate = purchaseDate;
             Model = model;
             PriceInDollar = priceInDollar;
+            LocalPrice = localPrice;
+            Office = office;
         }
 
         public string Type { get; set; }
@@ -26,6 +29,10 @@ namespace Asset_Tracking
         public string Model { get; set; }
 
         public double PriceInDollar { get; set; }
+
+        public double LocalPrice { get; set; }
+
+        public Office Office { get; set; }
 
     } 
 }

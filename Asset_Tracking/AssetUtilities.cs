@@ -50,7 +50,7 @@ namespace Asset_Tracking
 
 
         // Reads assets as input from user until user prints 'q': Type Brand Model Datepurchased and Price
-        public void ReadAllAssetVariablesFromUser(List<Asset> assets)
+        public void ReadAllAssetVariablesFromUser(List<Asset> assets,List<Office> offices)
         {
 
             string dataType = "";
@@ -58,6 +58,7 @@ namespace Asset_Tracking
             string dataModelName = "";
             string dataPurchasedDate = "";
             string dataPrice = "";
+            string dataCountry = "";
 
 
             while (true)
@@ -151,18 +152,40 @@ namespace Asset_Tracking
                 {
                     break;
                 }
+
+                bool officeOk = false;
+                while (!officeOk)
+                {
+                    dataCountry = ReadDataFromUser("Enter Office Country 'SWE', 'USA' or 'SPA'. Write q to quit");
+                    if (dataCountry.Trim().ToLower() == "swe" || dataCountry.Trim().ToLower() == "usa" ||
+                       dataCountry.Trim().ToLower() == "spa"|| dataCountry.Trim().ToLower() == "q")
+                    {
+                        officeOk = true;
+                    }
+                }
+                if (dataCountry.Trim().ToLower() == "q")
+                {
+                    break;
+                }
+
+                dataCountry = dataCountry.Trim().ToLower();
+
                 // All 3 datas here because no break has been performed
+
+                Office o = GetOffice(dataCountry, offices);
+                double lp = GetLocalPrice(o,price);
+                DateTime dt = Convert.ToDateTime(dataPurchasedDate.Trim());
 
                 if (dataType.Trim().ToLower() == "computer")
                 {
-                    DateTime dt = (DateTime)DoDate(dataPurchasedDate);
-                    Computer c = new Computer(dataBrandName, dataModelName, dt, price);
+                                
+                    Computer c = new Computer(dataBrandName, dataModelName, dt, price,lp,o);
                     assets.Add(c);
                 }
                 else if (dataType.Trim().ToLower() == "phone")
                 {
-                    DateTime dt = (DateTime)DoDate(dataPurchasedDate);
-                    Phone p = new Phone(dataBrandName, dataModelName, dt, price);
+              
+                    Phone p = new Phone(dataBrandName, dataModelName, dt, price,lp,o);
                     assets.Add(p);
                 }
 
@@ -173,29 +196,69 @@ namespace Asset_Tracking
             }
         }
 
-        public DateTime? DoDate(string str)
+        public double GetLocalPrice(Office office,double price)
         {
-            try
+            double fact = 0;         // kurserna nedan från 2024-06-04
+
+            if (office.Currency=="SEK")
             {
-
-                int y = Convert.ToInt32(str.Substring(0, 4));
-
-                int m = Convert.ToInt32(str.Substring(5, 2));
-
-                int d = Convert.ToInt32(str.Substring(8, 2));
-
-                return new DateTime(y, m, d);
+                fact = 10.46;
             }
-            catch (FormatException e)
+            else if (office.Currency=="USD")
             {
-                Console.WriteLine("Something went wrong when converting to a date");
+                fact = 1;
             }
-            catch (Exception ex)
+            else   // office.Currency == "EUR"
             {
-                Console.WriteLine("Something went wrong when converting to a date");
+                fact = 0.92;
             }
-            return null;
+            return fact * price;
         }
+
+        public Office GetOffice(string country,List<Office> offices)
+        {
+            Office office;
+            if (country.Equals("swe"))
+            {
+                office = offices.FirstOrDefault(item => item.Country.Equals("Sweden"));
+                
+            }
+            else if (country.Equals("usa"))
+            {
+                office = offices.FirstOrDefault(item => item.Country.Equals("USA"));
+               
+            }
+            else // country==spain
+            {
+                office = offices.FirstOrDefault(item => item.Country.Equals("Spain"));
+            }
+            return office;
+        }
+
+        //public DateTime? DoDate(string str)
+        //{
+        //    try
+        //    {
+
+        //        int y = Convert.ToInt32(str.Substring(0, 4));
+
+        //        int m = Convert.ToInt32(str.Substring(5, 2));
+
+        //        int d = Convert.ToInt32(str.Substring(8, 2));
+
+        //        return new DateTime(y, m, d);
+        //    }
+        //    catch (FormatException e)
+        //    {
+        //        Console.WriteLine("Something went wrong when converting to a date");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Something went wrong when converting to a date");
+        //    }
+        //    return null;
+        //}
+
 
         // Checks if a datetime-string of format "yyyy-MM-dd" is a valid date
         public bool ValidateDate(string str)
@@ -216,8 +279,10 @@ namespace Asset_Tracking
         public void WriteHeader()
         {
             Console.WriteLine();
-            Console.WriteLine("Type".PadRight(13) + "Brand".PadRight(16) +  "Model".PadRight(12) + "Purchase Date".PadRight(16) + "Price in USD".PadRight(15));
-            Console.WriteLine("----".PadRight(13) + "-----".PadRight(16) + "-----".PadRight(12) + "-----------".PadRight(16) + "-----------".PadRight(15));
+            Console.WriteLine("Type".PadRight(13) + "Brand".PadRight(11) +  "Model".PadRight(12) + "Office".PadRight(10) + "Price in USD".PadRight(15) 
+                + "Purchase Date".PadRight(15) + "Currency".PadRight(10) + "Local Price");
+            Console.WriteLine("----".PadRight(13) + "-----".PadRight(11) + "-----".PadRight(12) + "-------".PadRight(10) +  "-----------".PadRight(15) 
+                + "-------------".PadRight(15) + "--------".PadRight(10) + "---------");
         }
 
 
@@ -233,12 +298,14 @@ namespace Asset_Tracking
             foreach (var al in sorted)
             {
                 int t = GetTimeSpanInDays(al.PurchaseDate);
-                if (t-cmpTime<=90 || t>cmpTime)   // 
-                {
+                if (Math.Abs(t-cmpTime)<=90 && (t <= 1096))   // assets between 2 years 9 months and 3 years become red
+                {                                           // assets older than 3 years become white
+                
                     Console.ForegroundColor = ConsoleColor.Red;
                 }
-                Console.WriteLine(al.Type.PadRight(12) + " " + al.Brand.PadRight(15) + " " + al.Model.PadRight(11) + " " + 
-                    al.PurchaseDate.ToString("yyyy-MM-dd").PadRight(15) + " " + al.PriceInDollar.ToString().PadRight(15));
+                Console.WriteLine(al.Type.PadRight(13) +  al.Brand.PadRight(11) + al.Model.PadRight(12) + 
+                    al.Office.Country.PadRight(10) + al.PriceInDollar.ToString().PadRight(15) + 
+                    al.PurchaseDate.ToString("yyyy-MM-dd").PadRight(15) + al.Office.Currency.PadRight(10) + al.LocalPrice.ToString());
                 Console.ResetColor();
             }
 
