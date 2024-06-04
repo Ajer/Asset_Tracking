@@ -229,13 +229,26 @@ namespace Asset_Tracking
 
             WriteHeader();
 
+            int cmpTime = 3 * 365;   //1096
             foreach (var al in sorted)
             {
+                int t = GetTimeSpanInDays(al.PurchaseDate);
+                if (t-cmpTime<=90 || t>cmpTime)   // 
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
                 Console.WriteLine(al.Type.PadRight(12) + " " + al.Brand.PadRight(15) + " " + al.Model.PadRight(11) + " " + 
                     al.PurchaseDate.ToString("yyyy-MM-dd").PadRight(15) + " " + al.PriceInDollar.ToString().PadRight(15));
+                Console.ResetColor();
             }
 
             Console.WriteLine("--------------------------------------------------------------------------------------------");
+        }
+
+        public int GetTimeSpanInDays(DateTime dt)
+        {
+            TimeSpan ts = DateTime.Now - dt;
+            return ts.Days;
         }
 
     }
