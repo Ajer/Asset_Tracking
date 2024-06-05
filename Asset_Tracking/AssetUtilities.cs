@@ -173,7 +173,10 @@ namespace Asset_Tracking
                 // All 3 datas here because no break has been performed
 
                 Office o = GetOffice(dataCountry, offices);
+
                 double lp = GetLocalPrice(o,price);
+                lp = Math.Round(lp, 2);
+
                 DateTime dt = Convert.ToDateTime(dataPurchasedDate.Trim());
 
                 if (dataType.Trim().ToLower() == "computer")
@@ -289,20 +292,27 @@ namespace Asset_Tracking
 
         public void PrintAsset(List<Asset> assetList)
         {
-            List<Asset> sorted = assetList.OrderBy(item => item.Type).ThenBy(item=>item.PurchaseDate).ToList();
+            //List<Asset> sorted = assetList.OrderBy(item => item.Type).ThenBy(item=>item.PurchaseDate).ToList();
 
+            List<Asset> sorted = assetList.OrderBy(item => item.Office.Country).ThenBy(item => item.PurchaseDate).ToList();
 
             WriteHeader();
 
             int cmpTime = 3 * 365;   //1096
             foreach (var al in sorted)
             {
-                int t = GetTimeSpanInDays(al.PurchaseDate);
-                if (Math.Abs(t-cmpTime)<=90 && (t <= 1096))   // assets between 2 years 9 months and 3 years become red
-                {                                           // assets older than 3 years become white
+                int t1 = GetTimeSpanInDays(al.PurchaseDate);
+                if (Math.Abs(t1-cmpTime)<=90 || (t1 > 1096))   // assets between 2 years 9 months and 3 years become red
+                {                                           // assets older than 3 years become red also
                 
                     Console.ForegroundColor = ConsoleColor.Red;
                 }
+                else if (Math.Abs(t1 - cmpTime) <= 180) // && (t2 <= 1096))   // assets between 2 years 6 months and 2years and 9 months become yellow
+                {                                           // assets older than 3 years become red
+
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                }
+
                 Console.WriteLine(al.Type.PadRight(13) +  al.Brand.PadRight(11) + al.Model.PadRight(12) + 
                     al.Office.Country.PadRight(10) + al.PriceInDollar.ToString().PadRight(15) + 
                     al.PurchaseDate.ToString("yyyy-MM-dd").PadRight(15) + al.Office.Currency.PadRight(10) + al.LocalPrice.ToString());
