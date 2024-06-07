@@ -20,7 +20,7 @@ namespace Asset_Tracking
         //}
 
 
-        public string ReadDataFromUser(string userAction)
+        protected string ReadDataFromUser(string userAction)
         {
             Console.Write(userAction + ": "); //exempel  userAction = "Enter a Category"
             string? data = Console.ReadLine();
@@ -40,7 +40,7 @@ namespace Asset_Tracking
         }
 
 
-        public void SuccessMessage()
+        protected void SuccessMessage()
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("The Asset was successfully added");
@@ -175,7 +175,7 @@ namespace Asset_Tracking
                 Office o = GetOffice(dataCountry, offices);
 
                 double lp = GetLocalPrice(o,price);
-                lp = Math.Round(lp, 2);
+                lp = Math.Round(lp, 1);
 
                 DateTime dt = Convert.ToDateTime(dataPurchasedDate.Trim());
 
@@ -199,7 +199,7 @@ namespace Asset_Tracking
             }
         }
 
-        public double GetLocalPrice(Office office,double price)
+        protected double GetLocalPrice(Office office,double price)
         {
             double fact = 0;         // kurserna nedan från 2024-06-04
 
@@ -218,7 +218,7 @@ namespace Asset_Tracking
             return fact * price;
         }
 
-        public Office GetOffice(string country,List<Office> offices)
+        protected Office GetOffice(string country,List<Office> offices)
         {
             Office office;
             if (country.Equals("swe"))
@@ -238,33 +238,11 @@ namespace Asset_Tracking
             return office;
         }
 
-        //public DateTime? DoDate(string str)
-        //{
-        //    try
-        //    {
-
-        //        int y = Convert.ToInt32(str.Substring(0, 4));
-
-        //        int m = Convert.ToInt32(str.Substring(5, 2));
-
-        //        int d = Convert.ToInt32(str.Substring(8, 2));
-
-        //        return new DateTime(y, m, d);
-        //    }
-        //    catch (FormatException e)
-        //    {
-        //        Console.WriteLine("Something went wrong when converting to a date");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine("Something went wrong when converting to a date");
-        //    }
-        //    return null;
-        //}
+        
 
 
-        // Checks if a datetime-string of format "yyyy-MM-dd" is a valid date
-        public bool ValidateDate(string str)
+        // Checks if a datetime-string of format "yyyy-MM-dd" is a valid date. For instance: YYYY-04-32 or YYYY-06-31 are not
+        protected bool ValidateDate(string str)
         {
             DateTime dt;
             string[] formats = {"yyyy-MM-dd"};
@@ -279,7 +257,7 @@ namespace Asset_Tracking
         }
 
 
-        public void WriteHeader()
+        protected void WriteHeader()
         {
             Console.WriteLine();
             Console.WriteLine("Type".PadRight(13) + "Brand".PadRight(11) +  "Model".PadRight(12) + "Office".PadRight(10) + "Price in USD".PadRight(15) 
@@ -307,7 +285,7 @@ namespace Asset_Tracking
                 
                     Console.ForegroundColor = ConsoleColor.Red;
                 }
-                else if (Math.Abs(t1 - cmpTime) <= 180) // && (t2 <= 1096))   // assets between 2 years 6 months and 2years and 9 months become yellow
+                else if (Math.Abs(t1 - cmpTime) <= 180)       // assets between 2 years 6 months and 2years and 9 months become yellow
                 {                                           // assets older than 3 years become red
 
                     Console.ForegroundColor = ConsoleColor.Yellow;
@@ -322,7 +300,7 @@ namespace Asset_Tracking
             Console.WriteLine("--------------------------------------------------------------------------------------------");
         }
 
-        public int GetTimeSpanInDays(DateTime dt)
+        protected int GetTimeSpanInDays(DateTime dt)
         {
             TimeSpan ts = DateTime.Now - dt;
             return ts.Days;
