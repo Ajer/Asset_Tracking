@@ -1,8 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//implicit using-directives added by compiler in all console-classes .net8:
+//using System;
+//using System.IO
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Net.Http:
+//using System.Threading;
+//using System.Threading.Tasks;
 
 namespace Asset_Tracking
 {

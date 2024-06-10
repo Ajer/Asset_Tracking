@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Schema;
+
 
 namespace Asset_Tracking
 {
     public class AssetUtilities
     {
 
-        //public List<Asset> Assets { get; set; }
+       // public List<Asset> Assets { get; set; }
 
 
-        //public AssetUtilities(List<Asset> assets)
-        //{
-        //    Assets = assets;
-        //}
+       // public AssetUtilities(List<Asset> assets)
+       // {
+       //   Assets = assets;
+       // }
 
 
         private string ReadDataFromUser(string userAction)
         {
-            Console.Write(userAction + ": "); //exempel  userAction = "Enter a Category"
+            Console.Write(userAction + ": "); //example  userAction = "Enter a Brand"
             string? data = Console.ReadLine();
 
             if (data != null)
@@ -193,15 +189,13 @@ namespace Asset_Tracking
                 }
 
 
-                //write to file
-
                 SuccessMessage();
             }
         }
 
         private double GetLocalPrice(Office office,double price)
         {
-            double fact = 0;         // kurserna nedan från 2024-06-04
+            double fact = 0;         // currency values from 2024-06-04 , googled values
 
             if (office.Currency=="SEK")
             {
@@ -269,7 +263,9 @@ namespace Asset_Tracking
 
             if (count==0)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("No Items in list yet");
+                Console.ResetColor();
             }
         }
 
@@ -283,19 +279,20 @@ namespace Asset_Tracking
 
             WriteHeader(sorted);
 
-            int cmpTime = 3 * 365;   //1096
+            int cmpTime = 3 * 365;   // 1096 approx. 3 years
             foreach (var al in sorted)
             {
                 int t1 = GetTimeSpanInDays(al.PurchaseDate);
-                if (Math.Abs(t1-cmpTime)<=90 || (t1 > 1096))   // assets between 2 years 9 months and 3 years become red
-                {                                           // assets older than 3 years become red also  (level2)
                 
-                    Console.ForegroundColor = ConsoleColor.Red;
-                }
-                else if (Math.Abs(t1 - cmpTime) <= 180)       // assets between 2 years 6 months and 2years and 9 months become yellow
-                {                                           // assets older than 3 years become red  (level3)
+                if (Math.Abs(t1 - cmpTime) <= 180)       // assets between 2 years 6 months and 2 years and 9 months become yellow
+                {                                       // most general comparison first                
 
                     Console.ForegroundColor = ConsoleColor.Yellow;
+                }
+                if (Math.Abs(t1 - cmpTime) <= 90 || (t1 > 1096))   // assets between 2 years 9 months and 3 years become red
+                {                                           // assets older than 3 years become red also (t1 > 1096)
+
+                    Console.ForegroundColor = ConsoleColor.Red;
                 }
 
                 Console.WriteLine(al.Type.PadRight(13) +  al.Brand.PadRight(11) + al.Model.PadRight(12) + 
