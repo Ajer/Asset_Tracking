@@ -20,7 +20,7 @@ namespace Asset_Tracking
         //}
 
 
-        protected string ReadDataFromUser(string userAction)
+        private string ReadDataFromUser(string userAction)
         {
             Console.Write(userAction + ": "); //exempel  userAction = "Enter a Category"
             string? data = Console.ReadLine();
@@ -40,7 +40,7 @@ namespace Asset_Tracking
         }
 
 
-        protected void SuccessMessage()
+        private void SuccessMessage()
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("The Asset was successfully added");
@@ -68,7 +68,7 @@ namespace Asset_Tracking
                 Console.WriteLine();
                 while (!typeOk)
                 {
-                    dataType = ReadDataFromUser("Enter a Type ('Computer' or 'Phone'). Write q to quit");
+                    dataType = ReadDataFromUser("Enter a Type ('Computer' or 'Phone'). Write q (to show List and) quit program");
                     if (dataType.Trim().ToLower() == "computer" || dataType.Trim().ToLower() == "phone" || dataType.Trim().ToLower() == "q")
                     {
                         typeOk = true;
@@ -199,7 +199,7 @@ namespace Asset_Tracking
             }
         }
 
-        protected double GetLocalPrice(Office office,double price)
+        private double GetLocalPrice(Office office,double price)
         {
             double fact = 0;         // kurserna nedan från 2024-06-04
 
@@ -218,7 +218,7 @@ namespace Asset_Tracking
             return fact * price;
         }
 
-        protected Office GetOffice(string country,List<Office> offices)
+        private Office GetOffice(string country,List<Office> offices)
         {
             Office office;
             if (country.Equals("swe"))
@@ -242,7 +242,7 @@ namespace Asset_Tracking
 
 
         // Checks if a datetime-string of format "yyyy-MM-dd" is a valid date. For instance: YYYY-04-32 or YYYY-06-31 are not
-        protected bool ValidateDate(string str)
+        private bool ValidateDate(string str)
         {
             DateTime dt;
             string[] formats = {"yyyy-MM-dd"};
@@ -257,36 +257,43 @@ namespace Asset_Tracking
         }
 
 
-        protected void WriteHeader()
+        private void WriteHeader(List<Asset> assetList)
         {
+            int count = assetList.Count();
+
             Console.WriteLine();
             Console.WriteLine("Type".PadRight(13) + "Brand".PadRight(11) +  "Model".PadRight(12) + "Office".PadRight(10) + "Price in USD".PadRight(15) 
                 + "Purchase Date".PadRight(15) + "Currency".PadRight(10) + "Local Price");
             Console.WriteLine("----".PadRight(13) + "-----".PadRight(11) + "-----".PadRight(12) + "-------".PadRight(10) +  "-----------".PadRight(15) 
                 + "-------------".PadRight(15) + "--------".PadRight(10) + "---------");
+
+            if (count==0)
+            {
+                Console.WriteLine("No Items in list yet");
+            }
         }
 
 
 
         public void PrintAsset(List<Asset> assetList)
         {
-            //List<Asset> sorted = assetList.OrderBy(item => item.Type).ThenBy(item=>item.PurchaseDate).ToList();
+            //List<Asset> sorted = assetList.OrderBy(item => item.Type).ThenBy(item=>item.PurchaseDate).ToList();     // level2-sort
 
-            List<Asset> sorted = assetList.OrderBy(item => item.Office.Country).ThenBy(item => item.PurchaseDate).ToList();
+            List<Asset> sorted = assetList.OrderBy(item => item.Office.Country).ThenBy(item => item.PurchaseDate).ToList();  // level3-sort
 
-            WriteHeader();
+            WriteHeader(sorted);
 
             int cmpTime = 3 * 365;   //1096
             foreach (var al in sorted)
             {
                 int t1 = GetTimeSpanInDays(al.PurchaseDate);
                 if (Math.Abs(t1-cmpTime)<=90 || (t1 > 1096))   // assets between 2 years 9 months and 3 years become red
-                {                                           // assets older than 3 years become red also
+                {                                           // assets older than 3 years become red also  (level2)
                 
                     Console.ForegroundColor = ConsoleColor.Red;
                 }
                 else if (Math.Abs(t1 - cmpTime) <= 180)       // assets between 2 years 6 months and 2years and 9 months become yellow
-                {                                           // assets older than 3 years become red
+                {                                           // assets older than 3 years become red  (level3)
 
                     Console.ForegroundColor = ConsoleColor.Yellow;
                 }
@@ -300,7 +307,7 @@ namespace Asset_Tracking
             Console.WriteLine("--------------------------------------------------------------------------------------------");
         }
 
-        protected int GetTimeSpanInDays(DateTime dt)
+        private int GetTimeSpanInDays(DateTime dt)
         {
             TimeSpan ts = DateTime.Now - dt;
             return ts.Days;

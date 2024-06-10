@@ -17,11 +17,7 @@ void Main()
     Office us = new Office("USA","USD");
 
     List<Office> offices = new List<Office>() { swe, sp, us };
-
-    //var office = offices.FirstOrDefault(item=>item.Country.Equals("Spain"));  // IE
-    // string country = office.Country;
-    //string curr = office.Currency;
-     
+ 
 
     List<Asset> assetList = new List<Asset>();
 
