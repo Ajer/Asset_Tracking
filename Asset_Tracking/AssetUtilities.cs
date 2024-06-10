@@ -179,17 +179,17 @@ namespace Asset_Tracking
 
                 DateTime dt = Convert.ToDateTime(dataPurchasedDate.Trim());
 
-                if (dataType.Trim().ToLower() == "computer")
+                if (dataType.Trim().ToLower() == "computer")     // List<asset> assets. Asset parent-class to Computer and Phone
                 {
                                 
                     Computer c = new Computer(dataBrandName, dataModelName, dt, price,lp,o);
-                    assets.Add(c);
+                    assets.Add(c);                                           // add Computer-object to Asset-class
                 }
                 else if (dataType.Trim().ToLower() == "phone")
                 {
               
                     Phone p = new Phone(dataBrandName, dataModelName, dt, price,lp,o);
-                    assets.Add(p);
+                    assets.Add(p);                                             // add Phone-object to Asset-class
                 }
 
 
